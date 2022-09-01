@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct SwiftUICleanArchitectureApp: App {
+    
+    private var initDI = InitDepedencyInjection()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodoView()
         }
     }
 }
