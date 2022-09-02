@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct TodoView: View {
-    @StateObject var viewModel = TodoViewModel()
+    @StateObject private var viewModel = TodoViewModel()
+    
+    @State var searchText: String = ""
+    
+    var filteredTodos: [Todo] {
+        if searchText.isEmpty {
+            return viewModel.todos
+        } else {
+            return viewModel.todos.filter{ $0.title.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
 
     var body: some View {
         NavigationView{
             List{
                 viewModel.todos.isEmpty ? Text("Loading...").padding() : nil
+                (filteredTodos.isEmpty && searchText != "") ? Text("Not Result").padding() : nil
                 
-                ForEach(viewModel.todos){ todo in
+                ForEach(filteredTodos){ todo in
                     VStack(alignment: .leading){
                         HStack{
                             VStack(alignment: .leading){
@@ -30,9 +41,8 @@ struct TodoView: View {
                         }
                     }
                 }
-              
             }
-            
+            .searchable(text: $searchText, prompt: "Search Todos")
             .task {
                 await viewModel.getTodos()
             }
